@@ -50,7 +50,50 @@ def init_ui(app_instance):
     # 결과 출력 테이블
     app_instance.result_table = QTableWidget()
     layout.addWidget(QLabel("Team Assignments:"))
+    app_instance.result_table.setMinimumHeight(150)
     layout.addWidget(app_instance.result_table)
 
     app_instance.setLayout(layout)
     app_instance.setWindowTitle("RandTeamMaker")
+
+    # 화면 해상도에 따른 윈도우 크기 조정
+    adjust_window_size(app_instance)
+    center(app_instance)
+
+
+def adjust_window_size(app_instance):
+    """해상도에 따라 윈도우 크기를 조정하는 함수"""
+    screen_geometry = app_instance.screen().availableGeometry()
+    screen_width = screen_geometry.width()
+    screen_height = screen_geometry.height()
+
+    # 기본 비율 설정 (화면 크기의 50%)
+    width_ratio = 0.5
+    height_ratio = 0.5
+
+    # 전체 화면 크기의 비율로 윈도우 크기 설정
+    window_width = int(screen_width * width_ratio)
+    window_height = int(screen_height * height_ratio)
+
+    # 최소 크기 설정
+    min_width = 800
+    min_height = 800
+
+    # 최소 크기보다 작은 경우, 최소 크기로 설정
+    window_width = max(window_width, min_width)
+    window_height = max(window_height, min_height)
+
+    app_instance.resize(window_width, window_height)
+
+
+def center(app_instance):
+    """화면 중앙에 윈도우를 배치하는 함수"""
+    qr = app_instance.frameGeometry()
+    cp = app_instance.screen().availableGeometry().center()
+    qr.moveCenter(cp)
+    app_instance.move(qr.topLeft())
+
+
+def log_to_console(app_instance, message):
+    """콘솔 창에 로그 메시지를 출력하는 함수"""
+    app_instance.console_output.append(message)

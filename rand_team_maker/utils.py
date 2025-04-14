@@ -53,3 +53,32 @@ def generate_team_assignments(group_data: dict, num_teams: int) -> dict:
         teams[team_number].append(member)
 
     return teams
+
+
+def generate_team_assignments_with_group_shuffle(
+    group_data: dict, num_teams: int
+) -> dict:
+    """
+    그룹별 데이터를 받아 전체 인원을 랜덤하게 팀으로 분배하되,
+    동일 그룹 멤버들이 가능한 서로 다른 팀에 배정되도록 하고,
+    중복된 멤버는 한 번만 배정되도록 처리합니다.
+    """
+    teams = {i + 1: [] for i in range(num_teams)}
+    assigned_members = set()
+    unique_members = []
+
+    # 중복 없는 멤버 수집
+    for members in group_data.values():
+        for member in members:
+            name = member.strip()
+            if name and name not in assigned_members:
+                unique_members.append(name)
+                assigned_members.add(name)
+
+    random.shuffle(unique_members)
+
+    for idx, member in enumerate(unique_members):
+        team_id = (idx % num_teams) + 1
+        teams[team_id].append(member)
+
+    return teams
