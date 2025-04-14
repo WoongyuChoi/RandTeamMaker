@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import (
+    QGridLayout,
     QVBoxLayout,
     QLabel,
     QTextEdit,
@@ -24,16 +25,20 @@ def init_ui(app_instance):
     team_count_layout.addWidget(app_instance.team_spinbox)
     layout.addLayout(team_count_layout)
 
-    # 그룹 입력
+    # 그룹 입력을 가로로 배치 (최대 5개까지 확장 가능)
     app_instance.group_inputs = []
-    for i in range(3):  # 최대 그룹 3개로 시작 (필요시 확장 가능)
+    group_input_layout = QGridLayout()
+
+    for i in range(5):
         group_box = QGroupBox(f"Group {i + 1}")
         group_layout = QVBoxLayout()
         group_text = QTextEdit()
         app_instance.group_inputs.append(group_text)
         group_layout.addWidget(group_text)
         group_box.setLayout(group_layout)
-        layout.addWidget(group_box)
+        group_input_layout.addWidget(group_box, 0, i)  # 가로로 배치
+
+    layout.addLayout(group_input_layout)
 
     # 팀 배정 버튼
     app_instance.generate_button = QPushButton("Generate Teams")
@@ -77,7 +82,7 @@ def adjust_window_size(app_instance):
 
     # 최소 크기 설정
     min_width = 800
-    min_height = 800
+    min_height = 600
 
     # 최소 크기보다 작은 경우, 최소 크기로 설정
     window_width = max(window_width, min_width)
