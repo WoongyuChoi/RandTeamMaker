@@ -55,7 +55,7 @@ def init_ui(app_instance):
     # 결과 출력 테이블
     app_instance.result_table = QTableWidget()
     layout.addWidget(QLabel("Team Assignments:"))
-    app_instance.result_table.setMinimumHeight(150)
+    app_instance.result_table.setMinimumHeight(200)
     layout.addWidget(app_instance.result_table)
 
     app_instance.setLayout(layout)

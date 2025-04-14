@@ -55,30 +55,39 @@ def generate_team_assignments(group_data: dict, num_teams: int) -> dict:
     return teams
 
 
-def generate_team_assignments_with_group_shuffle(
-    group_data: dict, num_teams: int
-) -> dict:
+def generate_team_assignments_with_group_shuffle(group_data: dict, num_teams: int) -> dict:
     """
-    그룹별 데이터를 받아 전체 인원을 랜덤하게 팀으로 분배하되,
-    동일 그룹 멤버들이 가능한 서로 다른 팀에 배정되도록 하고,
-    중복된 멤버는 한 번만 배정되도록 처리합니다.
+    그룹별 멤버를 무작위로 섞고, 팀 내에 기존 그룹과 동일한 멤버 구성이 들어가지 않도록 팀을 나눕니다.
+    또한, 전체 멤버 중 중복되는 이름은 한 번만 배정되도록 보장합니다.
     """
-    teams = {i + 1: [] for i in range(num_teams)}
-    assigned_members = set()
-    unique_members = []
 
-    # 중복 없는 멤버 수집
-    for members in group_data.values():
-        for member in members:
+    # 중복 제거된 전체 멤버 수집
+    seen = set()
+    all_members = []
+    for group in group_data.values():
+        for member in group:
             name = member.strip()
-            if name and name not in assigned_members:
-                unique_members.append(name)
-                assigned_members.add(name)
+            if name and name not in seen:
+                all_members.append(name)
+                seen.add(name)
 
-    random.shuffle(unique_members)
+    # 필터링되지 않은 모든 그룹을 집합으로 저장 (2명 이상)
+    original_groups = [set([m.strip() for m in group if m.strip()])
+                       for group in group_data.values() if len(group) > 1]
 
-    for idx, member in enumerate(unique_members):
-        team_id = (idx % num_teams) + 1
-        teams[team_id].append(member)
+    for _ in range(100):  # 최대 100번 재시도
+        random.shuffle(all_members)
+        teams = {i + 1: [] for i in range(num_teams)}
 
-    return teams
+        for idx, member in enumerate(all_members):
+            team_id = (idx % num_teams) + 1
+            teams[team_id].append(member)
+
+        # 팀과 기존 그룹이 완전히 일치하는 경우가 있는지 검사
+        team_sets = [set(team) for team in teams.values()]
+        has_conflict = any(team_set in original_groups for team_set in team_sets)
+
+        if not has_conflict:
+            return teams
+
+    raise ValueError("적절한 팀 구성을 찾을 수 없습니다. 그룹 구성이 너무 고정되어 있거나 팀 수가 부족합니다.")

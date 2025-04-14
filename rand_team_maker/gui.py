@@ -28,11 +28,12 @@ class RandTeamMakerApp(QWidget):
             if len(total_members) < num_teams:
                 self.log_to_console("팀 수보다 구성원이 더 적습니다.")
                 return
-
+            
+            # 기존 출력 테이블 초기화
+            self.result_table.clear()
+            
             # 팀 배정 (그룹 충돌 방지 포함)
-            teams = utils.generate_team_assignments_with_group_shuffle(
-                group_data, num_teams
-            )
+            teams = utils.generate_team_assignments_with_group_shuffle(group_data, num_teams)
 
             # 테이블 출력
             max_team_size = max(len(team) for team in teams.values())
