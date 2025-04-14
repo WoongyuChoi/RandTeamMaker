@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem
+import pandas as pd
+from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QFileDialog
 from rand_team_maker import ui_setup, utils
 
 
@@ -31,17 +32,15 @@ class RandTeamMakerApp(QWidget):
             
             # 기존 출력 테이블 초기화
             self.result_table.clear()
-            
-            # 팀 배정 (그룹 충돌 방지 포함)
+
+            # 팀 배정
             teams = utils.generate_team_assignments_with_group_shuffle(group_data, num_teams)
 
             # 테이블 출력
             max_team_size = max(len(team) for team in teams.values())
             self.result_table.setRowCount(max_team_size)
             self.result_table.setColumnCount(num_teams)
-            self.result_table.setHorizontalHeaderLabels(
-                [f"Team {i}" for i in teams.keys()]
-            )
+            self.result_table.setHorizontalHeaderLabels([f"Team {i}" for i in teams.keys()])
 
             for col, team in teams.items():
                 for row, member in enumerate(team):
@@ -49,6 +48,34 @@ class RandTeamMakerApp(QWidget):
                     self.result_table.setItem(row, col - 1, item)
 
             self.log_to_console("팀 구성이 완료되었습니다.")
-
         except Exception as e:
             self.log_to_console(f"Error: {str(e)}")
+    
+    def export_csv(self):
+        try:
+            row_count = self.result_table.rowCount()
+            col_count = self.result_table.columnCount()
+
+            if row_count == 0 or col_count == 0:
+                self.log_to_console("내보낼 데이터가 없습니다.")
+                return
+
+            # QTableWidget → DataFrame 변환
+            data = []
+            for row in range(row_count):
+                row_data = []
+                for col in range(col_count):
+                    item = self.result_table.item(row, col)
+                    row_data.append(item.text() if item else "")
+                data.append(row_data)
+
+            headers = [self.result_table.horizontalHeaderItem(i).text() for i in range(col_count)]
+            df = pd.DataFrame(data, columns=headers)
+
+            # 파일 저장
+            file_name, _ = QFileDialog.getSaveFileName(self, "Export CSV", "", "CSV Files (*.csv);;All Files (*)")
+            if file_name:
+                df.to_csv(file_name, index=False)
+                self.log_to_console(f"CSV 파일로 내보내기 완료: {file_name}")
+        except Exception as e:
+            self.log_to_console(f"CSV 내보내기 오류: {str(e)}")

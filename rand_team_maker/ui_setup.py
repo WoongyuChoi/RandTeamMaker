@@ -58,6 +58,13 @@ def init_ui(app_instance):
     app_instance.result_table.setMinimumHeight(200)
     layout.addWidget(app_instance.result_table)
 
+    # 하단 레이아웃
+    bottom_layout = QHBoxLayout()
+    app_instance.export_button = QPushButton("CSV 내보내기")
+    app_instance.export_button.clicked.connect(app_instance.export_csv)
+    bottom_layout.addWidget(app_instance.export_button, alignment=Qt.AlignRight)
+    layout.addLayout(bottom_layout)
+
     app_instance.setLayout(layout)
     app_instance.setWindowTitle("RandTeamMaker")
 
