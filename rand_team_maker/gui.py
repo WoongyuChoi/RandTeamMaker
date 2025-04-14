@@ -1,71 +1,71 @@
 import random
-from PyQt5.QtWidgets import (
-    QWidget,
-    QTextEdit,
-    QPushButton,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QTableWidget,
-    QTableWidgetItem,
-)
+import pandas as pd
+from PyQt5.QtWidgets import QWidget, QTableWidgetItem
 from rand_team_maker import ui_setup
 
 
 class RandTeamMakerApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.group_inputs = []
-        self.num_teams_input = None
-        self.generate_button = None
-        self.team_table = None
-
         ui_setup.init_ui(self)
+        self.generate_button.clicked.connect(self.generate_teams)
 
     def generate_teams(self):
-        all_members = []
-        group_data = []
-
-        # 각 그룹별 멤버 수집
-        for input_widget in self.group_inputs:
-            members = [
-                m.strip() for m in input_widget.toPlainText().splitlines() if m.strip()
-            ]
-            if members:
-                group_data.append(members)
-                all_members.extend(members)
-
         try:
-            num_teams = int(self.num_teams_input.toPlainText().strip())
+            num_teams = int(self.team_count_input.text())
             if num_teams <= 0:
-                raise ValueError
-        except ValueError:
-            self.display_result([["Please enter a valid number of teams."]])
-            return
+                self.console_output.append("Team count must be greater than 0.")
+                return
 
-        if not all_members or num_teams > len(all_members):
-            self.display_result([["Not enough members to form teams."]])
-            return
+            # 그룹별 입력 수집
+            all_members = []
+            for input_area in self.group_inputs:
+                text = input_area.toPlainText()
+                members = [line.strip() for line in text.splitlines() if line.strip()]
+                all_members.append(members)
 
-        # 섞되 그룹 간 멤버들이 나뉘도록 처리
-        assigned = [[] for _ in range(num_teams)]
+            # 전체 구성원 통합 및 중복 제거 없이 유지
+            flat_members = [member for group in all_members for member in group]
+            if len(flat_members) < num_teams:
+                self.console_output.append(
+                    "Members are fewer than the number of teams."
+                )
+                return
 
-        for group in group_data:
-            shuffled = group.copy()
-            random.shuffle(shuffled)
-            for idx, member in enumerate(shuffled):
-                assigned[idx % num_teams].append(member)
+            # 그룹 간 멤버가 동일하면 섞기 방지용으로 그룹 정보를 유지하면서 분리
+            group_indices = [i for i, group in enumerate(all_members) for _ in group]
+            combined = list(zip(flat_members, group_indices))
 
-        self.display_result(assigned)
+            random.shuffle(combined)
 
-    def display_result(self, team_data):
-        self.team_table.clear()
-        self.team_table.setRowCount(max(len(t) for t in team_data))
-        self.team_table.setColumnCount(len(team_data))
+            # 그룹이 섞이도록 팀에 분배
+            teams = [[] for _ in range(num_teams)]
+            team_indices = list(range(num_teams))
+            group_map = {}
+            for member, group_idx in combined:
+                random.shuffle(team_indices)
+                for idx in team_indices:
+                    if idx not in group_map.get(group_idx, set()):
+                        teams[idx].append(member)
+                        group_map.setdefault(group_idx, set()).add(idx)
+                        break
+                else:
+                    # fallback: 아무 데나 넣기
+                    teams[random.choice(team_indices)].append(member)
 
-        for col, team in enumerate(team_data):
-            self.team_table.setHorizontalHeaderItem(
-                col, QTableWidgetItem(f"Team {col + 1}")
+            # 출력 테이블 세팅
+            max_team_size = max(len(team) for team in teams)
+            self.result_table.setRowCount(max_team_size)
+            self.result_table.setColumnCount(num_teams)
+            self.result_table.setHorizontalHeaderLabels(
+                [f"Team {i+1}" for i in range(num_teams)]
             )
-            for row, member in enumerate(team):
-                self.team_table.setItem(row, col, QTableWidgetItem(member))
+
+            for col, team in enumerate(teams):
+                for row, member in enumerate(team):
+                    item = QTableWidgetItem(member)
+                    self.result_table.setItem(row, col, item)
+
+            self.console_output.append("Team generation complete.")
+        except Exception as e:
+            self.console_output.append(f"Error: {str(e)}")
