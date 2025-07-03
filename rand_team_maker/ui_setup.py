@@ -9,8 +9,11 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
     QHBoxLayout,
     QGroupBox,
+    QSizePolicy,
 )
 from PyQt5.QtCore import Qt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 def init_ui(app_instance):
@@ -40,6 +43,11 @@ def init_ui(app_instance):
 
     layout.addLayout(group_input_layout)
 
+    # 무작위 입력 버튼
+    app_instance.random_button = QPushButton("Random Fill")
+    app_instance.random_button.clicked.connect(app_instance.populate_random)
+    layout.addWidget(app_instance.random_button)
+
     # 팀 배정 버튼
     app_instance.generate_button = QPushButton("Generate Teams")
     app_instance.generate_button.clicked.connect(app_instance.generate_teams)
@@ -52,6 +60,15 @@ def init_ui(app_instance):
     layout.addWidget(QLabel("Console Output:"))
     layout.addWidget(app_instance.console_output)
 
+    # 결과 출력 그래프
+    app_instance.figure = Figure(figsize=(4, 2))
+    app_instance.canvas = FigureCanvas(app_instance.figure)
+    app_instance.canvas.setFixedHeight(100)
+    # app_instance.canvas.setFixedWidth(300)
+    app_instance.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    layout.addWidget(QLabel("Distribution Overview:"))
+    layout.addWidget(app_instance.canvas, stretch=1)
+
     # 결과 출력 테이블
     app_instance.result_table = QTableWidget()
     layout.addWidget(QLabel("Team Assignments:"))
@@ -60,8 +77,11 @@ def init_ui(app_instance):
 
     # 하단 레이아웃
     bottom_layout = QHBoxLayout()
+    app_instance.reset_button = QPushButton("초기화")
+    app_instance.reset_button.clicked.connect(app_instance.reset_ui)
     app_instance.export_button = QPushButton("CSV 내보내기")
     app_instance.export_button.clicked.connect(app_instance.export_csv)
+    bottom_layout.addWidget(app_instance.reset_button, alignment=Qt.AlignLeft)
     bottom_layout.addWidget(app_instance.export_button, alignment=Qt.AlignRight)
     layout.addLayout(bottom_layout)
 
