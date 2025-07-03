@@ -34,7 +34,7 @@ class RandTeamMakerApp(QWidget):
             self.result_table.clear()
 
             # 팀 배정
-            teams = utils.generate_team_assignments_with_group_shuffle(group_data, num_teams)
+            teams = utils.generate_team_assignments_balanced(group_data, num_teams)
 
             # 테이블 출력
             max_team_size = max(len(team) for team in teams.values())
