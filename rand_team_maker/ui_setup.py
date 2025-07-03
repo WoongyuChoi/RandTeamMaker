@@ -43,6 +43,11 @@ def init_ui(app_instance):
 
     layout.addLayout(group_input_layout)
 
+    # 무작위 입력 버튼
+    app_instance.random_button = QPushButton("Random Fill")
+    app_instance.random_button.clicked.connect(app_instance.populate_random)
+    layout.addWidget(app_instance.random_button)
+
     # 팀 배정 버튼
     app_instance.generate_button = QPushButton("Generate Teams")
     app_instance.generate_button.clicked.connect(app_instance.generate_teams)

@@ -178,3 +178,22 @@ class RandTeamMakerApp(QWidget):
             self.canvas.draw_idle()
         except Exception as e:
             self.log_to_console(f"그래프 생성 오류: {str(e)}")
+    
+    def populate_random(self) -> None:
+        """팀 수·그룹 인원을 무작위로 채워 테스트용 데이터를 만든다."""
+        try:
+            num_teams, group_data = utils.generate_random_test_data()
+            self.team_spinbox.setValue(num_teams)
+
+            # UI 채우기
+            for idx, input_area in enumerate(self.group_inputs):
+                members = group_data.get(idx, [])
+                input_area.setPlainText("\n".join(members) if members else "")
+            
+            total_members = sum(len(m) for m in group_data.values())
+            
+            self.log_to_console(
+                f"랜덤 입력: 팀 {num_teams}개, 그룹 {len(group_data)}개, 인원 {total_members}명"
+            )
+        except Exception as e:
+            self.log_to_console(f"랜덤 입력 오류: {str(e)}")

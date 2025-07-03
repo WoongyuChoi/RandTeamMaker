@@ -198,3 +198,34 @@ def generate_team_assignments_balanced(group_data: dict, num_teams: int, max_ret
                 return candidate
 
         raise ValueError("적절한 팀 구성을 찾을 수 없습니다. 제약 조건이 과도하거나 팀 수가 부족합니다.")
+
+def generate_random_test_data(
+    *,
+    max_groups: int = 5,
+    max_group_size: int = 5,
+    max_teams: int = 6,
+) -> tuple[int, dict[int, list[str]]]:
+    """Return (num_teams, group_data) for quick UI testing.
+
+    Parameters
+    ----------
+    max_groups : 최대 그룹 개수(1~5)
+    max_group_size : 각 그룹별 최대 인원(1~5)
+    max_teams : 팀 수 상한(1~6)
+    """
+    num_teams = random.randint(1, max_teams)
+    num_groups = random.randint(1, max_groups)
+
+    # 1) 먼저 그룹·멤버를 모두 만든 뒤 총원 파악
+    group_data: dict[int, list[str]] = {}
+    for gi in range(num_groups):
+        size = random.randint(1, max_group_size)
+        base = chr(65 + gi)  # 0→A, 1→B …
+        group_data[gi] = [base] + [f"{base}{i}" for i in range(1, size)]
+    
+    total_members = sum(len(lst) for lst in group_data.values())
+    
+    # 2) 팀 수는 ‘1 ~ min(max_teams, total_members)’ 범위에서 선택
+    num_teams = random.randint(1, min(max_teams, total_members))
+
+    return num_teams, group_data
