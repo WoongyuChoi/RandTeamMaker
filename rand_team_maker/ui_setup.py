@@ -60,8 +60,11 @@ def init_ui(app_instance):
 
     # 하단 레이아웃
     bottom_layout = QHBoxLayout()
+    app_instance.reset_button = QPushButton("초기화")
+    app_instance.reset_button.clicked.connect(app_instance.reset_ui)
     app_instance.export_button = QPushButton("CSV 내보내기")
     app_instance.export_button.clicked.connect(app_instance.export_csv)
+    bottom_layout.addWidget(app_instance.reset_button, alignment=Qt.AlignLeft)
     bottom_layout.addWidget(app_instance.export_button, alignment=Qt.AlignRight)
     layout.addLayout(bottom_layout)
 

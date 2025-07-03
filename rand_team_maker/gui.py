@@ -79,3 +79,23 @@ class RandTeamMakerApp(QWidget):
                 self.log_to_console(f"CSV 파일로 내보내기 완료: {file_name}")
         except Exception as e:
             self.log_to_console(f"CSV 내보내기 오류: {str(e)}")
+    
+    def reset_ui(self) -> None:
+        try:
+            """모든 입력·출력 위젯을 초기 상태로 되돌립니다."""
+            # 1) 그룹 입력 칸 비우기
+            for input_area in self.group_inputs:
+                input_area.clear()
+
+            # 2) 결과 테이블 초기화
+            self.result_table.setRowCount(0)
+            self.result_table.setColumnCount(0)
+            self.result_table.clear()
+
+            # 3) 팀 수 스핀박스 기본값
+            self.team_spinbox.setValue(1)  # 필요 없으면 삭제
+
+            # 4) 콘솔 로그 클리어
+            self.console_output.clear()
+        except Exception as e:
+            self.log_to_console(f"초기화 오류: {str(e)}")
