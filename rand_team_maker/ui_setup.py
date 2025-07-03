@@ -9,8 +9,11 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
     QHBoxLayout,
     QGroupBox,
+    QSizePolicy,
 )
 from PyQt5.QtCore import Qt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 def init_ui(app_instance):
@@ -51,6 +54,15 @@ def init_ui(app_instance):
     app_instance.console_output.setMaximumHeight(100)
     layout.addWidget(QLabel("Console Output:"))
     layout.addWidget(app_instance.console_output)
+
+    # 결과 출력 그래프
+    app_instance.figure = Figure(figsize=(4, 2))
+    app_instance.canvas = FigureCanvas(app_instance.figure)
+    app_instance.canvas.setFixedHeight(100)
+    # app_instance.canvas.setFixedWidth(300)
+    app_instance.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    layout.addWidget(QLabel("Distribution Overview:"))
+    layout.addWidget(app_instance.canvas, stretch=1)
 
     # 결과 출력 테이블
     app_instance.result_table = QTableWidget()
