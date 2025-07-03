@@ -1,3 +1,4 @@
 pandas
 PyInstaller
 PyQt5
+matplotlib
