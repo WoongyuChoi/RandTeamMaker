@@ -1,12 +1,12 @@
 # RandTeamMaker
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=fff&labelColor=grey&color=yellowgreen)  
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/WoongyuChoi/RandTeamMaker/blob/main/LICENSE)  
-![Platform](https://img.shields.io/badge/platform-desktop-blue)  
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=fff&labelColor=grey&color=yellowgreen)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/WoongyuChoi/RandTeamMaker/blob/main/LICENSE)
+![Platform](https://img.shields.io/badge/platform-desktop-blue)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/WoongyuChoi/RandTeamMaker)
 
 <figure align="center">
-  <img src="https://github.com/user-attachments/assets/f3fc1e37-d910-476c-8e7a-eb60b52501a9" width="80%" />
+  <img src="https://github.com/user-attachments/assets/212a87da-1cfd-4d44-a634-0166035b979e" width="80%" />
 </figure>
 
 ## Overview
